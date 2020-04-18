@@ -1,17 +1,18 @@
-typedef struct person {
-    int id;
-    char *name;
-    char *email;
-    int age;
-    long document;
-} PERSON;
+#ifndef _ACCOUNT_H
+#define _ACCOUNT_H
 
-typedef struct account {
+#include "person.h"
+
+typedef struct account
+{
     long account_number;
-    PERSON p;
+    int person_id;
     double balance;
 } BANK_ACCOUNT;
 
 void display_create_account();
-char* clear_string(char *str);
-int create_person(PERSON *p);
+int get_next_account_number();
+int create_bank_account(BANK_ACCOUNT *bank_account);
+char *clear_string(char *str);
+
+#endif
