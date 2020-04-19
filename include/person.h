@@ -1,4 +1,3 @@
-
 #ifndef _PERSON_H
 #define _PERSON_H
 
@@ -13,5 +12,6 @@ typedef struct person
 
 int create_person(PERSON *p);
 int get_next_person_id();
+int delete_person(int id);
 
 #endif

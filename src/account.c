@@ -49,7 +49,7 @@ void display_create_account()
         if (!bank_account_created)
         {
             printf("Error creating bank account for person %s", p.name);
-            /** @TODO: remove person from database */
+            delete_person(p.id);
         }
     }
 
