@@ -25,5 +25,5 @@ compile the program. If you already have it, just run the following command belo
 root:
 
 ```bash
-$ gcc src/* -o program.out && ./program.out
+$ gcc src/*.c -o program.out && ./program.out
 ```
