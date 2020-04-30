@@ -16,7 +16,7 @@ Simple project that has as objective simulate a bank account manager, allowing u
 
 - Remove account :x:
 
-- See account list :x:
+- See account list :heavy_check_mark:
 
 ## Running the project
 
