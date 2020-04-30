@@ -93,6 +93,38 @@ int create_bank_account(BANK_ACCOUNT *bank_account)
     return 1;
 }
 
+void display_account_list()
+{
+    FILE *f = fopen(ACCOUNT_DATABASE_PATH, "r");
+    char row[1024];
+
+    // Ignore first line cause it's last id
+    fgets(row, sizeof row, f);
+
+    while(fgets(row, sizeof row, f) != NULL) {
+        build_bank_account_struct(row);
+    }
+
+    fclose(f);
+}
+
+BANK_ACCOUNT build_bank_account_struct(char row[1024])
+{
+    char *token = malloc(255);
+    token = strtok(row, ",");
+
+    for (int i = 0; i < QTT_ACCOUNT_FIELDS; i++) {
+        printf("%s", ACCOUNT_FIELDS[i].key);
+    }
+
+    while(token != NULL) {
+        printf("%s \n", token);
+        token = strtok(NULL, ",");
+    }
+
+    free(token);
+}
+
 char *clear_string(char *str)
 {
     for (int i = 0; i < strlen(str); i++)

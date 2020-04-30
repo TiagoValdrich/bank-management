@@ -41,6 +41,10 @@ void display_option_interface(int option) {
             system("clear");
             display_create_account();
             break;
+        case 6:
+            system("clear");
+            display_account_list();
+            break;
         case 7:
             system("clear");
             exit(1);
