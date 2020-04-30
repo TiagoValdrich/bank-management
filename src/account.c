@@ -98,11 +98,12 @@ void display_account_list()
     FILE *f = fopen(ACCOUNT_DATABASE_PATH, "r");
     char row[1024];
 
+    printf("************         Bank account list         ************\n\n");
     // Ignore first line cause it's last id
     fgets(row, sizeof row, f);
 
     while(fgets(row, sizeof row, f) != NULL) {
-        build_bank_account_struct(row);
+        print_formated_bank_account_from_row(row);
     }
 
     fclose(f);
@@ -110,18 +111,44 @@ void display_account_list()
 
 BANK_ACCOUNT build_bank_account_struct(char row[1024])
 {
+    BANK_ACCOUNT bank_account = {0, 0, 0.0};
     char *token = malloc(255);
     token = strtok(row, ",");
 
-    for (int i = 0; i < QTT_ACCOUNT_FIELDS; i++) {
-        printf("%s", ACCOUNT_FIELDS[i].key);
-    }
-
-    while(token != NULL) {
-        printf("%s \n", token);
+    /** @TODO: find a way to not hardcode table struct/table fields */
+    for (int i = 0; i < 3; i++) {
+        if (i == 0) {
+            bank_account.account_number = atol(token);
+        } else if (i == 1) {
+            bank_account.person_id = atoi(token);
+        } else if (i == 2) {
+            bank_account.balance = atof(token);
+        }
         token = strtok(NULL, ",");
     }
 
+    free(token);
+    return bank_account;
+}
+
+void print_formated_bank_account_from_row(char row[1024])
+{
+    char *token = malloc(255);
+    token = strtok(row, ",");
+
+    /** @TODO: find a way to not hardcode table struct/table fields */
+    for (int i = 0; i < 3; i++) {
+        if (i == 0) {
+            printf("Account number - %s ", token);
+        } else if (i == 1) {
+            printf("Person ID - %s ", token);
+        } else if (i == 2) {
+            printf("Current balance - %s", token);
+        }
+        token = strtok(NULL, ",");
+    }
+
+    printf("\n\n");
     free(token);
 }
 

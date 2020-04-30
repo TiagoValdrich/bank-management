@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "../include/person.h"
-#include "../include/utils.h"
 
 const char *PERSON_DATABASE_PATH = "database/person.txt";
 
