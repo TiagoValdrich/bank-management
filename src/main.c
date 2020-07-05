@@ -16,5 +16,5 @@ int main()
         while ((getchar()) != '\n');
 
         display_option_interface(option);
-    } while (0);
+    } while (1);
 }

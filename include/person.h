@@ -13,5 +13,8 @@ typedef struct person
 int create_person(PERSON *p);
 int get_next_person_id();
 int delete_person(int id);
+int person_exists(int id);
+PERSON generate_empty_person();
+PERSON get_person_by_id(int id);
 
 #endif

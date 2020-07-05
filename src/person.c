@@ -99,3 +99,71 @@ int delete_person(int id)
     fclose(s_file);
     return 1;
 }
+
+int person_exists(int id) 
+{
+    FILE *f = fopen(PERSON_DATABASE_PATH, "r");
+    char text_line[1024];
+
+    // Ignore first line
+    fgets(text_line, sizeof text_line, f);
+
+    while(fgets(text_line, sizeof text_line, f) != NULL)
+    {
+        int person_id = atoi(strtok(text_line, ","));
+
+        if (person_id && (person_id == id))
+        {
+            return 1;
+        }
+    }
+
+    fclose(f);
+
+    return 0;
+}
+
+PERSON generate_empty_person()
+{
+    PERSON p = {
+        0, // ID
+        "none", // Name
+        "none", // Email
+        0, // Age
+        0 // Document
+    };
+
+    return p;
+}
+
+PERSON get_person_by_id(int id)
+{
+    FILE *f = fopen(PERSON_DATABASE_PATH, "r");
+    char text_line[1024];
+    PERSON p = generate_empty_person();
+
+    // Ignore first line
+    fgets(text_line, sizeof text_line, f);
+
+    while(fgets(text_line, sizeof text_line, f) != NULL)
+    {
+        char *saved, *token;
+        token = __strtok_r(text_line, ",", &saved);
+        int person_id = atoi(token);
+
+        if (person_id && (person_id == id))
+        {
+            p.id = person_id;
+            p.name = __strtok_r(NULL, ",", &saved);
+            p.email = __strtok_r(NULL, ",", &saved);
+            p.age = atoi(__strtok_r(NULL, ",", &saved));
+            p.document = atol(__strtok_r(NULL, ",", &saved));
+
+            break;
+        }
+    }
+
+    fclose(f);
+
+    return p;
+}

@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "../include/account.h"
 #include "../include/person.h"
 
 const char *ACCOUNT_DATABASE_PATH = "database/account.txt";
+const int MAX_ITEMS_PER_PAGE = 5;
 
 void display_create_account()
 {
@@ -97,14 +99,70 @@ void display_account_list()
 {
     FILE *f = fopen(ACCOUNT_DATABASE_PATH, "r");
     char row[1024];
+    int index = 0;
 
     printf("************         Bank account list         ************\n\n");
     // Ignore first line cause it's last id
     fgets(row, sizeof row, f);
 
     while(fgets(row, sizeof row, f) != NULL) {
+        int break_loop = 0;
+        index++;
         print_formated_bank_account_from_row(row);
+
+        if (index == MAX_ITEMS_PER_PAGE) {
+            char opt;
+
+            do {
+                printf("\n\n\n\n");
+                printf("N - Next page    S - Select account     E - Exit to menu  ");
+
+                scanf("%c", &opt);
+
+                opt = toupper(opt);
+
+                switch(opt) {
+                    case 'N':
+                        system("clear");
+                        continue;
+                    case 'S':
+                        // @TODO: Create check account details
+                        break_loop = 1;
+                        break;
+                    case 'E':
+                        break_loop = 1;
+                        break;
+                }
+            } while (opt != 'N' && opt != 'S' && opt != 'E');
+
+            if (break_loop) {
+                break;
+            }
+        }
     }
+
+    char opt;
+
+    do {
+        printf("\n\n\n\n");
+        printf("S - Select account     E - Exit to menu  ");
+
+        // Cleaning buffer
+        while ((getchar()) != '\n');
+
+        scanf("%c", &opt);
+
+        opt = toupper(opt);
+
+        switch(opt) {
+            case 'S':
+                // @TODO: Create check account details
+                break;
+            case 'E':
+                break;
+        }
+
+    } while(opt != 'S' && opt != 'E');
 
     fclose(f);
 }
@@ -133,23 +191,26 @@ BANK_ACCOUNT build_bank_account_struct(char row[1024])
 
 void print_formated_bank_account_from_row(char row[1024])
 {
-    char *token = malloc(255);
-    token = strtok(row, ",");
+    char *token, *saved;
+    token = __strtok_r(row, ",", &saved);
+
+    printf("\n");
 
     /** @TODO: find a way to not hardcode table struct/table fields */
     for (int i = 0; i < 3; i++) {
         if (i == 0) {
-            printf("Account number - %s ", token);
+            printf("Account number: %s\n", token);
         } else if (i == 1) {
-            printf("Person ID - %s ", token);
+            PERSON p = get_person_by_id(atoi(token));
+            printf("Account owner: %s\n", p.name);
         } else if (i == 2) {
-            printf("Current balance - %s", token);
+            printf("Current balance: %s\n", token);
         }
-        token = strtok(NULL, ",");
+
+        token = __strtok_r(NULL, ",", &saved);
     }
 
-    printf("\n\n");
-    free(token);
+    printf("**********\n");
 }
 
 char *clear_string(char *str)
