@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "../include/account.h"
 #include "../include/person.h"
+#include "../include/utils.h"
 
 const char *ACCOUNT_DATABASE_PATH = "database/account.txt";
 const int MAX_ITEMS_PER_PAGE = 5;
@@ -76,6 +77,47 @@ int get_next_account_number()
     return (++next_account_number);
 }
 
+BANK_ACCOUNT get_account_by_id(int id)
+{
+    FILE *f = fopen(ACCOUNT_DATABASE_PATH, "r");
+    char text_line[1024];
+    BANK_ACCOUNT bank_account = generate_empty_bank_account();
+
+    // Ignore first line
+    fgets(text_line, sizeof text_line, f);
+
+    while(fgets(text_line, sizeof text_line, f) != NULL)
+    {
+        char *saved, *token;
+        token = __strtok_r(text_line, ",", &saved);
+        int account_id = atol(token);
+
+        if (account_id && account_id == id)
+        {
+            bank_account.account_number = account_id;
+            bank_account.person_id = atoi(__strtok_r(text_line, ",", &saved));
+            bank_account.balance = atof(__strtok_r(text_line, ",", &saved));
+
+            break;
+        }
+    }
+
+    fclose(f);
+
+    return bank_account;
+}
+
+BANK_ACCOUNT generate_empty_bank_account()
+{
+    BANK_ACCOUNT bank_account = {
+        0.0, // ID
+        0, // Person ID
+        0.0, // Balance
+    };
+
+    return bank_account;
+}
+
 int create_bank_account(BANK_ACCOUNT *bank_account)
 {
     FILE *f = fopen(ACCOUNT_DATABASE_PATH, "r+");
@@ -87,12 +129,17 @@ int create_bank_account(BANK_ACCOUNT *bank_account)
     }
 
     fseek(f, 0, SEEK_END);
-    fprintf(f, "\n%ld,%d,%f", bank_account->account_number, bank_account->person_id, bank_account->balance);
+    fprintf(f, "%ld,%d,%f\n", bank_account->account_number, bank_account->person_id, bank_account->balance);
     fseek(f, 0, SEEK_SET);
     fprintf(f, "%ld", bank_account->account_number);
     fclose(f);
 
     return 1;
+}
+
+int delete_account(int account_id)
+{
+    return generic_delete(ACCOUNT_DATABASE_PATH, account_id);
 }
 
 void display_account_list()
@@ -115,7 +162,7 @@ void display_account_list()
 
             do {
                 printf("\n\n\n\n");
-                printf("N - Next page    S - Select account     E - Exit to menu  ");
+                printf("N - Next page    D - Delete account    S - Select account     E - Exit to menu  ");
 
                 scanf("%c", &opt);
 
@@ -129,11 +176,15 @@ void display_account_list()
                         // @TODO: Create check account details
                         break_loop = 1;
                         break;
+                    case 'D':
+                        handle_account_deletion();
+                        break_loop = 1;
+                        break;
                     case 'E':
                         break_loop = 1;
                         break;
                 }
-            } while (opt != 'N' && opt != 'S' && opt != 'E');
+            } while (opt != 'D' && opt != 'N' && opt != 'S' && opt != 'E');
 
             if (break_loop) {
                 break;
@@ -145,11 +196,7 @@ void display_account_list()
 
     do {
         printf("\n\n\n\n");
-        printf("S - Select account     E - Exit to menu  ");
-
-        // Cleaning buffer
-        while ((getchar()) != '\n');
-
+        printf("D - Delete account    S - Select account     E - Exit to menu  ");
         scanf("%c", &opt);
 
         opt = toupper(opt);
@@ -158,11 +205,14 @@ void display_account_list()
             case 'S':
                 // @TODO: Create check account details
                 break;
+            case 'D':
+                handle_account_deletion();
+                break;
             case 'E':
                 break;
         }
 
-    } while(opt != 'S' && opt != 'E');
+    } while(opt != 'D' && opt != 'S' && opt != 'E');
 
     fclose(f);
 }
@@ -187,6 +237,31 @@ BANK_ACCOUNT build_bank_account_struct(char row[1024])
 
     free(token);
     return bank_account;
+}
+
+void handle_account_deletion()
+{
+    system("clear");
+
+    int account_id;
+
+    printf("\n\nInsert the account number that you want to delete: ");
+    scanf("%d", &account_id);
+
+    BANK_ACCOUNT bank_account = get_account_by_id(account_id);
+
+    if (bank_account.account_number != 0 && bank_account.account_number == account_id) {
+        int success_account = delete_account(account_id);
+        int success_person = delete_person(bank_account.person_id);
+
+        if (success_account && success_person) {
+            printf("\n Bank account deleted!\n");
+        } else {
+            printf("\n Error deleting bank account!\n");
+        }
+    } else {
+        printf("\nAccount not found!\n");
+    }
 }
 
 void print_formated_bank_account_from_row(char row[1024])
