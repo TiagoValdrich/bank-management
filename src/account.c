@@ -173,7 +173,7 @@ void display_account_list()
                         system("clear");
                         continue;
                     case 'S':
-                        // @TODO: Create check account details
+                        show_account_details();
                         break_loop = 1;
                         break;
                     case 'D':
@@ -203,7 +203,7 @@ void display_account_list()
 
         switch(opt) {
             case 'S':
-                // @TODO: Create check account details
+                show_account_details();
                 break;
             case 'D':
                 handle_account_deletion();
@@ -259,6 +259,39 @@ void handle_account_deletion()
         } else {
             printf("\n Error deleting bank account!\n");
         }
+    } else {
+        printf("\nAccount not found!\n");
+    }
+}
+
+void show_account_details()
+{
+    system("clear");
+
+    int account_id;
+
+    printf("\n\nInsert the account number that you want to see details: ");
+    scanf("%d", &account_id);
+
+    BANK_ACCOUNT bank_account = get_account_by_id(account_id);
+
+    if (bank_account.account_number != 0 && bank_account.account_number == account_id) {
+        PERSON p = get_person_by_id(bank_account.person_id);
+
+        printf("\nBank account number: %ld", bank_account.account_number);
+        printf("\nBalance: %f", bank_account.balance);
+        printf("\n\nBank account owner: %s", p.name);
+        printf("\nCPF: %ld", p.document);
+        printf("\nEmail: %s", p.email);
+
+        printf("\n\nPress enter to back to menu.");
+
+        // Workaround to handle some \n in buffer
+        char c;
+        scanf("%c", &c);
+        scanf("%c", &c);
+        
+        system("clear");
     } else {
         printf("\nAccount not found!\n");
     }

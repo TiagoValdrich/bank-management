@@ -12,7 +12,7 @@ Simple project that has as objective simulate a bank account manager, allowing u
 
 - View and manage transactions :x:
 
-- See account details :x:
+- See account details :heavy_check_mark:
 
 - Delete account :heavy_check_mark:
 
